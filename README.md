@@ -1,19 +1,126 @@
-## GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images (NeurIPS 2022)<br><sub>Official PyTorch implementation </sub>
+### This repository was modified by Omar Mena, according to the license, to dockerize and generalize the use of the GET3D paper with a CLIP implementation.
 
-![Teaser image](./docs/assets/get3d_model.png)
+# Abstract of the project: 
+This project presents a novel approach to integrating CLIP(Contrastive Language-Image Pre-training) into the inference stage of a generative 3D modeling system based on GET3D. By leveraging CLIP’s ability to align textual descriptions with visual representations, we facilitate the generation of 3D models that exhibit high visual quality, as we are using an updated and upgraded ShapeNet dataset that contains more accurate information and aligns with user-provided text inputs. Our approach provides controllable and customization of the generated 3D content, allowing users to access 3D ad-hoc content. Through ablation studies, we demonstrate the effectiveness of our CLIP integration in improving the relevance and quality of the generated 3D models compared to the original GET3D model. This work contributes to the advancement of language-guided 3D content generation and has potential applications in various domains such as digital art, gaming, and design.
 
-**GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images**<br>
-[Jun Gao](http://www.cs.toronto.edu/~jungao/)
-, [Tianchang Shen](http://www.cs.toronto.edu/~shenti11/)
-, [Zian Wang](http://www.cs.toronto.edu/~zianwang/),
-[Wenzheng Chen](http://www.cs.toronto.edu/~wenzheng/), [Kangxue Yin](https://kangxue.org/)
-, [Daiqing Li](https://scholar.google.ca/citations?user=8q2ISMIAAAAJ&hl=en),
-[Or Litany](https://orlitany.github.io/), [Zan Gojcic](https://zgojcic.github.io/),
-[Sanja Fidler](https://www.cs.toronto.edu/~fidler/) <br>
-**[Paper](https://nv-tlabs.github.io/GET3D/assets/paper.pdf)
-, [Project Page](https://nv-tlabs.github.io/GET3D/)**
+## Results of th project
+[image info](./pictures/image.png)
 
-Abstract: *As several industries are moving towards modeling massive 3D virtual worlds,
+# Docker Setup Guide for Linux and Windows (WSL)
+
+## Docker Setup on Linux
+Docker is a powerful platform for developing, shipping, and running applications. Below, you will find detailed steps on how to set up Docker on both Linux and Windows using the Windows Subsystem for Linux (WSL).
+
+### Uninstall Old Versions
+Older versions of Docker were called `docker`, `docker.io`, or `docker-engine`. If these are installed, uninstall them along with associated dependencies.
+
+```bash
+sudo apt-get remove docker docker-engine docker.io containerd runc
+```
+
+### Update the apt package index and install packages to allow apt to use a repository over HTTPS:
+ ```bash
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+```
+
+### Add Docker’s official GPG key:
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+### Set up the stable repository:
+```bash
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+```
+
+### Update the apt package index, and install the latest version of Docker Engine and containerd:
+```bash
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+### Verify that Docker Engine is installed correctly by running the hello-world image:
+```bash
+sudo docker run hello-world
+```
+
+/////////////////////
+## Docker Setup on Windows with WLS
+
+### Open PowerShell as Administrator and run:
+```bash
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+### Enable Virtual Machine feature:
+ ```bash
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+### Set WSL 2 as your default version:
+```bash
+wsl --set-default-version 2
+```
+
+### Downloading Docker
+1. Download Docker Desktop for Windows from the Docker Hub.
+
+2. Run the installer and ensure the "Enable WSL 2 Features" option is checked.
+
+3. After installation, Docker Desktop prompts to log out and log back in; ensure to complete this step.
+
+4. Docker Desktop automatically integrates with WSL. Verify by opening your Linux distribution via WSL and typing:
+```bash
+docker run hello-world
+```
+
+
+# How to setup blender docker with GPUs to render ShapeNet V2
+## Prerrequisites
+- NVIDIA GPU Drivers and Docker: You must have NVIDIA drivers installed to enable GPU usage within Docker containers. Refer to the NVIDIA Docker GitHub for installation instructions. -> https://github.com/NVIDIA/nvidia-container-toolkit
+- If you installed everything correctly, you will run the following command and be able to use Blender on Docker with GPU's
+```bash
+docker run --gpus all -ti -v "%cd%":/home/project/blender -e CYCLES_DEVICE=CUDA nytimes/blender:2.90-gpu-ubuntu18.04
+```
+
+## Just a few more steps...
+Now we just need install the last libraries, for that I included them in form of shell files so you can just run them
+```bash
+sh install_get3d.sh
+sh install_clip.sh
+sh install_kaolin.sh
+sh install_nvidiadiffrast.sh
+```
+
+# How to setup nvidia docker with GPUs
+This part is directly related to the usage of the project.
+Once you have followed the prerrequisites above, we can start building the project's docker 
+```bash
+#From the root folder
+cd docker
+sh make_image.sh get3d:vn .
+
+#after building the image we can run it using the GPU's
+docker run --gpus all -ti -v "%cd%":/home/project get3d:vn
+
+#we can check if all the modules and cuda are available by using without erros
+nvcc --version
+```
+
+
+
+## GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images
+
+Abstract of the project: *As several industries are moving towards modeling massive 3D virtual worlds,
 the need for content creation tools that can scale in terms of the quantity, quality, and
 diversity of 3D content is becoming evident. In our work, we aim to train performant 3D
 generative models that synthesize textured meshes which can be directly consumed by 3D
@@ -28,18 +135,6 @@ recent success in the differentiable surface modeling, differentiable rendering 
 able to generate high-quality 3D textured meshes, ranging from cars, chairs, animals,
 motorbikes and human characters to buildings, achieving significant improvements over
 previous methods.*
-
-![Teaser Results](./docs/assets/teaser_result.jpg)
-
-For business inquiries, please visit our website and submit the
-form: [NVIDIA Research Licensing](https://www.nvidia.com/en-us/research/inquiries/)
-
-## News
-
-- 2023-09-15: We added the support for [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/) as a drop-in replacement for DMTet. Please refer to this [section](https://github.com/nv-tlabs/GET3D#employing-flexicubes) for more details. 
-- 2022-10-13: Pretrained model on Shapenet released! Check more details [here](./pretrained_model)
-- 2022-09-29: Code released!
-- 2022-09-22: Code will be uploaded next week!
 
 ## Requirements
 
@@ -76,9 +171,6 @@ GET3D is trained on synthetic dataset. We provide rendering scripts for Shapenet
 refer to [readme](./render_shapenet_data/README.md) to download shapenet dataset and
 render it.
 
-## Employing FlexiCubes
-We integrate [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/), our lastest high-quality isosurface representation. To leverage FlexiCubes as an alternative to DMTet for isosurfacing, simply append `--iso_surface flexicubes` to the following training and inference commands.
-
 ## Train the model
 
 #### Clone the gitlab code and necessary files:
@@ -107,14 +199,6 @@ python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path 
 python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=400 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
 ```
 
-- If want to train on separate generators (main Figure in the paper):
-
-```bash
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=80 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 0
-python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=3200 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 0
-```
-
 If want to debug the model first, reduce the number of gpus to 1 and batch size to 4 via:
 
 ```bash
@@ -140,46 +224,13 @@ python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 
 - To generate the results with latent code interpolation, add one option to the inference
   command: `--inference_save_interpolation 1`
 
+#Results
+## PLACEHOLDER OF IMAGES NOW
+
 ### Evaluation metrics
-
-##### Compute FID
-
-- To evaluate the model with FID metric, add one option to the inference
-  command: `--inference_compute_fid 1`
 
 ##### Compute COV & MMD scores for LFD & CD
 
 - First generate 3D objects for evaluation, add one option to the inference
   command: `--inference_generate_geo 1`
 - Following [README](./evaluation_scripts/README.md) to compute metrics.
-
-## License
-
-Copyright &copy; 2022, NVIDIA Corporation & affiliates. All rights reserved.
-
-This work is made available under
-the [Nvidia Source Code License](https://github.com/nv-tlabs/GET3D/blob/master/LICENSE.txt)
-.
-
-## Broader Information
-
-GET3D builds upon several previous works:
-
-- [Learning Deformable Tetrahedral Meshes for 3D Reconstruction (NeurIPS 2020)](https://nv-tlabs.github.io/DefTet/)
-- [Deep Marching Tetrahedra: a Hybrid Representation for High-Resolution 3D Shape Synthesis (NeurIPS 2021)](https://nv-tlabs.github.io/DMTet/)
-- [Extracting Triangular 3D Models, Materials, and Lighting From Images (CVPR 2022)](https://nvlabs.github.io/nvdiffrec/)
-- [EG3D: Efficient Geometry-aware 3D Generative Adversarial Networks (CVPR 2022)](https://nvlabs.github.io/eg3d/)
-- [DIB-R++: Learning to Predict Lighting and Material with a Hybrid Differentiable Renderer (NeurIPS 2021)](https://nv-tlabs.github.io/DIBRPlus/)
-- [Nvdiffrast – Modular Primitives for High-Performance Differentiable Rendering (SIGRAPH Asia 2020)](https://nvlabs.github.io/nvdiffrast/)
-
-## Citation
-
-```latex
-@inproceedings{gao2022get3d,
-title={GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images},
-author={Jun Gao and Tianchang Shen and Zian Wang and Wenzheng Chen and Kangxue Yin
-and Daiqing Li and Or Litany and Zan Gojcic and Sanja Fidler},
-booktitle={Advances In Neural Information Processing Systems},
-year={2022}
-}
-```
