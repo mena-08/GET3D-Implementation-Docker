@@ -111,11 +111,3 @@ python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 
 - First generate 3D objects for evaluation, add one option to the inference
   command: `--inference_generate_geo 1`
 - Following [README](./evaluation_scripts/README.md) to compute metrics.
-
-## License
-
-Copyright &copy; 2022, NVIDIA Corporation & affiliates. All rights reserved.
-
-This work is made available under
-the [Nvidia Source Code License](https://github.com/nv-tlabs/GET3D/blob/master/LICENSE.txt)
-.
