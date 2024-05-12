@@ -3,11 +3,48 @@
 # Abstract of the project: 
 This project presents a novel approach to integrating CLIP(Contrastive Language-Image Pre-training) into the inference stage of a generative 3D modeling system based on GET3D. By leveraging CLIP’s ability to align textual descriptions with visual representations, we facilitate the generation of 3D models that exhibit high visual quality, as we are using an updated and upgraded ShapeNet dataset that contains more accurate information and aligns with user-provided text inputs. Our approach provides controllable and customization of the generated 3D content, allowing users to access 3D ad-hoc content. Through ablation studies, we demonstrate the effectiveness of our CLIP integration in improving the relevance and quality of the generated 3D models compared to the original GET3D model. This work contributes to the advancement of language-guided 3D content generation and has potential applications in various domains such as digital art, gaming, and design.
 
-### How do we use CLIP in code?  in the file ```inf```
+### How do we use CLIP in code?  in the file ```inference_utils.py``` you can see our implementation in that file.
+Our implementation utilizes the CLIP model to ensure that the generated 3D models by GET3D closely align with the given textual descriptions. Here is how we achieve this:
 
+1. **Load CLIP Model**: We load a pre-trained CLIP model, which is capable of understanding and processing both text and images.
 
+    ```python
+    clip_model, preprocess = clip.load("ViT-B/32", device=device)
+    ```
+
+2. **Encode Text**: The text is tokenized and transformed into a dense vector representing its semantic meaning.
+
+    ```python
+    text_description = 'a red new car'
+    text_tokens = clip.tokenize([text_description]).to(device)
+    text_features = clip_model.encode_text(text_tokens)
+    ```
+
+3. **Generate and Process Images**: For each image:
+   - Convert the image from tensor to PIL format.
+   - Compute image features using CLIP.
+   - Calculate the cosine similarity loss between text and image features.
+
+    ```python
+    img_pil = to_pil(img[0, :3, :, :])
+    img_clip = preprocess(img_pil).unsqueeze(0).to(device)
+    image_features = clip_model.encode_image(img_clip)
+    loss = 1 - torch.cosine_similarity(text_features, image_features)
+    ```
+
+4. **Optimize Latent Space**: The loss is used to perform gradient descent to optimize the latent codes, aligning the generated image with the textual description.
+
+    ```python
+    optimizer = torch.optim.Adam([z, geo_z], lr=0.01)
+    loss.backward(retain_graph=True)
+    optimizer.step()
+    ```
+    
 ## Results of th project
-[image info](./pictures/image.png)
+![result1](/image1.png "Result1")
+![result2](/image2.png "Result2")
+![result3](/image3.png "Result3")
+![result4](/image4.png "Result4")
 
 # Hardware requisites
 * 1 &ndash; 2-8 high-end NVIDIA GPUs. We have done all testing and development using V100 or A100
