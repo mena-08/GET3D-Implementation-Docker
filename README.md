@@ -106,6 +106,9 @@ python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 
 - To generate the results with latent code interpolation, add one option to the inference
   command: `--inference_save_interpolation 1`
 
+#Results
+## PLACEHOLDER OF IMAGES NOW
+
 ### Evaluation metrics
 
 ##### Compute COV & MMD scores for LFD & CD
