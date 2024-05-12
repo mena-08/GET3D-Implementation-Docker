@@ -1,0 +1,13 @@
+// RENDER ON BLENDER WITHIN THE CONTAINER
+python3 render_all.py --save_folder cars --dataset_folder ../ShapeNetCore --blender_root /bin/blender --shapenet_version 2
+
+docker run --gpus all -ti -v "%cd%":/home/blender/project -e CYCLES_DEVICE=CUDA nytimes/blender:2.90-gpu-ubuntu18.04
+docker run --gpus all -ti -v "%cd%":/home/get3d/project get3d:v2
+
+python train_3d.py --outdir=logs --data=render_shapenet_data/cars/img --camera_path render_shapenet_data/cars/camera/02958343 --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
+#module load gcc/11.3.0
+#module load cuda/11.8
+
+python train_3d.py --outdir=save_inference_results/shapenet_car  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain pretrained_models/shapenet_car.pt
+python train_3d.py --outdir=save_inference_results/shapenet_chair  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain pretrained_models/shapenet_car.pt
