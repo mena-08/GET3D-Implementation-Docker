@@ -1,3 +1,5 @@
+This repository was modified by Omar Mena, according to the license, to dockerize and generalize the use of the GET3D paper with a CLIP implementation.
+
 ## GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images
 
 Abstract: *As several industries are moving towards modeling massive 3D virtual worlds,
