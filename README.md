@@ -1,8 +1,118 @@
 This repository was modified by Omar Mena, according to the license, to dockerize and generalize the use of the GET3D paper with a CLIP implementation.
 
+# Docker Setup Guide for Linux and Windows (WSL)
+
+## Docker Setup on Linux
+Docker is a powerful platform for developing, shipping, and running applications. Below, you will find detailed steps on how to set up Docker on both Linux and Windows using the Windows Subsystem for Linux (WSL).
+
+### Uninstall Old Versions
+Older versions of Docker were called `docker`, `docker.io`, or `docker-engine`. If these are installed, uninstall them along with associated dependencies.
+
+```bash
+sudo apt-get remove docker docker-engine docker.io containerd runc
+```
+
+### Update the apt package index and install packages to allow apt to use a repository over HTTPS:
+ ```bash
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+```
+
+### Add Docker’s official GPG key:
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+### Set up the stable repository:
+```bash
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+```
+
+### Update the apt package index, and install the latest version of Docker Engine and containerd:
+```bash
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+### Verify that Docker Engine is installed correctly by running the hello-world image:
+```bash
+sudo docker run hello-world
+```
+
+/////////////////////
+## Docker Setup on Windows with WLS
+
+### Open PowerShell as Administrator and run:
+```bash
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+### Enable Virtual Machine feature:
+ ```bash
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+### Set WSL 2 as your default version:
+```bash
+wsl --set-default-version 2
+```
+
+### Downloading Docker
+1. Download Docker Desktop for Windows from the Docker Hub.
+
+2. Run the installer and ensure the "Enable WSL 2 Features" option is checked.
+
+3. After installation, Docker Desktop prompts to log out and log back in; ensure to complete this step.
+
+4. Docker Desktop automatically integrates with WSL. Verify by opening your Linux distribution via WSL and typing:
+```bash
+docker run hello-world
+```
+
+
+# How to setup blender docker with GPUs to render ShapeNet V2
+## Prerrequisites
+- NVIDIA GPU Drivers and Docker: You must have NVIDIA drivers installed to enable GPU usage within Docker containers. Refer to the NVIDIA Docker GitHub for installation instructions. -> https://github.com/NVIDIA/nvidia-container-toolkit
+- If you installed everything correctly, you will run the following command and be able to use Blender on Docker with GPU's
+```bash
+docker run --gpus all -ti -v "%cd%":/home/project/blender -e CYCLES_DEVICE=CUDA nytimes/blender:2.90-gpu-ubuntu18.04
+```
+
+## Just a few more steps...
+Now we just need install the last libraries, for that I included them in form of shell files so you can just run them
+```bash
+sh install_get3d.sh
+sh install_clip.sh
+sh install_kaolin.sh
+sh nvidiadiffrast.sh
+```
+
+# How to setup nvidia docker with GPUs
+This part is directly related to the usage of the project.
+Once you have followed the prerrequisites above, we can start building the project's docker 
+```bash
+#From the root folder
+cd docker
+sh make_image.sh get3d:vn .
+
+#after building the image we can run it using the GPU's
+docker run --gpus all -ti -v "%cd%":/home/project get3d:vn
+
+#we can check if all the modules and cuda are available by using without erros
+nvcc --version
+```
+
 ## GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images
 
-Abstract: *As several industries are moving towards modeling massive 3D virtual worlds,
+Abstract of the project: *As several industries are moving towards modeling massive 3D virtual worlds,
 the need for content creation tools that can scale in terms of the quantity, quality, and
 diversity of 3D content is becoming evident. In our work, we aim to train performant 3D
 generative models that synthesize textured meshes which can be directly consumed by 3D
