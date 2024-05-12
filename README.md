@@ -1,4 +1,10 @@
-This repository was modified by Omar Mena, according to the license, to dockerize and generalize the use of the GET3D paper with a CLIP implementation.
+### This repository was modified by Omar Mena, according to the license, to dockerize and generalize the use of the GET3D paper with a CLIP implementation.
+
+# Abstract of the project: 
+This project presents a novel approach to integrating CLIP(Contrastive Language-Image Pre-training) into the inference stage of a generative 3D modeling system based on GET3D. By leveraging CLIP’s ability to align textual descriptions with visual representations, we facilitate the generation of 3D models that exhibit high visual quality, as we are using an updated and upgraded ShapeNet dataset that contains more accurate information and aligns with user-provided text inputs. Our approach provides controllable and customization of the generated 3D content, allowing users to access 3D ad-hoc content. Through ablation studies, we demonstrate the effectiveness of our CLIP integration in improving the relevance and quality of the generated 3D models compared to the original GET3D model. This work contributes to the advancement of language-guided 3D content generation and has potential applications in various domains such as digital art, gaming, and design.
+
+## Results of th project
+[image info](./pictures/image.png)
 
 # Docker Setup Guide for Linux and Windows (WSL)
 
@@ -92,7 +98,7 @@ Now we just need install the last libraries, for that I included them in form of
 sh install_get3d.sh
 sh install_clip.sh
 sh install_kaolin.sh
-sh nvidiadiffrast.sh
+sh install_nvidiadiffrast.sh
 ```
 
 # How to setup nvidia docker with GPUs
@@ -109,6 +115,8 @@ docker run --gpus all -ti -v "%cd%":/home/project get3d:vn
 #we can check if all the modules and cuda are available by using without erros
 nvcc --version
 ```
+
+
 
 ## GET3D: A Generative Model of High Quality 3D Textured Shapes Learned from Images
 
