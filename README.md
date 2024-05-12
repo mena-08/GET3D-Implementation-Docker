@@ -212,3 +212,6 @@ python train_3d.py --outdir=save_inference_results/shapenet_car  --gpus=1 --batc
   command: `--inference_generate_geo 1`
   
 - Following [README](./evaluation_scripts/README.md) to compute metrics.
+
+
+# OMAR MENA , KAUST, MS IN COMPUTER SCIENCE, COURSE : CS283
